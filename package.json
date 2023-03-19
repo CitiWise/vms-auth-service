@@ -12,6 +12,26 @@
   },
   "author": "aditya banotra",
   "license": "ISC",
+  "dependencies": {
+    "@sentry/node": "^7.43.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.7.0",
+    "express-validator": "^6.15.0",
+    "http": "0.0.1-security",
+    "json2xls": "^0.1.2",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.21",
+    "path": "^0.12.7",
+    "typeorm": "^0.3.12",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.3",
+    "typescript": "^4.9.5"
+  },
   "bugs": {
     "url": "https://github.com/CitiWise/vms-auth-service/issues"
   },
