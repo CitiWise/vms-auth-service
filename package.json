@@ -1,0 +1,19 @@
+{
+  "name": "vms-auth-service",
+  "version": "1.0.0",
+  "description": "micro service for auth",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CitiWise/vms-auth-service.git"
+  },
+  "author": "aditya banotra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CitiWise/vms-auth-service/issues"
+  },
+  "homepage": "https://github.com/CitiWise/vms-auth-service#readme"
+}
