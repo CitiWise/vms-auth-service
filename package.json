@@ -3,33 +3,53 @@
   "version": "1.0.0",
   "description": "micro service for auth",
   "main": "index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CitiWise/vms-auth-service.git"
+  },
+  "scripts": {
+    "clean": "rimraf dist/",
+    "lint": "./node_modules/.bin/tslint --fix -c  tslint.json 'src/**/**.ts'",
+    "tsc": "tsc --project ./tsconfig.json",
+    "prettier-all": "./node_modules/.bin/prettier --write 'src/**/*.+(ts|tsx|js|css|json)'",
+    "precompile": "npm run prettier-all && npm run lint && npm run clean",
+    "build": "npm run tsc",
+    "postbuild": "rimraf  dist/**/spec dist/**/*.spec.js",
+    "watch": "tsc -w -p ./src -p ./tsconfig.json",
+    "dev": "nodemon ./src/index.ts",
+    "dev:debug": "export DEBUG_PORT=9234 && nodemon ./src/index.ts",
+    "start": "node ./dist/index.js",
+    "typeorm": "npm run build && npx typeorm -d dist/typeorm/dataSource.js",
+    "migration:generate": "npm run typeorm -- migration:generate src/typeorm/migrations/ab", 
+    "migration:run":"npm run typeorm -- migration:run",
+    "tslint-check": "tslint-config-prettier-check ./tslint.json"
   },
   "author": "aditya banotra",
   "license": "ISC",
   "dependencies": {
     "@sentry/node": "^7.43.0",
+    "bcrypt": "^5.1.0",
+    "bluebird": "^3.7.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-rate-limit": "^6.7.0",
     "express-validator": "^6.15.0",
     "http": "0.0.1-security",
+    "http-status-codes": "^2.2.0",
+    "ioredis": "^5.3.1",
     "json2xls": "^0.1.2",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.21",
     "path": "^0.12.7",
     "typeorm": "^0.3.12",
+    "uuidv4": "^6.2.13",
     "winston": "^3.8.2"
   },
   "devDependencies": {
     "@types/node": "^18.15.3",
+    "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
   },
   "bugs": {

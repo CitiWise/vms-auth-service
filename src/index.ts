@@ -4,17 +4,18 @@ import dotenv from "dotenv";
 import * as http from "http";
 
 import app from "./app";
-import { Database } from "./typeorm/dbCreateConnection";
+import { DBConnection } from "./typeorm/dbCreateConnection";
 import { logger } from "./utils/logger";
+import ormConfig from "./typeorm/config/ormConfig";
 
 dotenv.config({ path: "../.env " });
 
 const main = async () => {
   const PORT = process.env.PORT;
+  console.log(PORT);
 
   // init database
-  const database = new Database();
-  await database.getConnection();
+  await DBConnection.init(ormConfig);
 
   const server = http.createServer(app);
 
@@ -36,7 +37,6 @@ const main = async () => {
   async function commonErrorHandler(err) {
     logger.warn("SOMETHING BROKE!!");
     logger.error(err);
-   
 
     process.exit(0);
   }
@@ -51,4 +51,3 @@ const main = async () => {
 };
 
 main();
-

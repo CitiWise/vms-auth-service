@@ -2,26 +2,16 @@ import { DataSource, DataSourceOptions } from "typeorm";
 import { logger } from "../utils/logger";
 import ormconfig from "./config/ormConfig";
 
-/**
- * Class - Manage database connections
- *
- */
+export class DBConnection {
+  static UMSDataSource;
+  static config: any;
 
+  static async init(config) {
+    this.UMSDataSource = new DataSource(config);
 
-export class Database {
-  private config: any;
- 
-
-  constructor(config?: DataSourceOptions) {
-    this.config = config;
-  }
-
-  public async getConnection(): Promise<DataSource> {
-    const VMSDataSource = new DataSource(this.config || ormconfig);
-
-    if (!VMSDataSource.isInitialized) await VMSDataSource.initialize();
-    logger.info("New DB VMSDataSource made");
-
-    return VMSDataSource;
+    if (!this.UMSDataSource.isInitialized) {
+      await this.UMSDataSource.initialize();
+      logger.info("New Datasource UMSDataSource made");
+    }
   }
 }
