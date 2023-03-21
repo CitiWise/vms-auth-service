@@ -7,6 +7,7 @@ import app from "./app";
 import { DBConnection } from "./typeorm/dbCreateConnection";
 import { logger } from "./utils/logger";
 import ormConfig from "./typeorm/config/ormConfig";
+import { RedisConnection } from "./libs/redisConnection";
 
 dotenv.config({ path: "../.env " });
 
@@ -16,6 +17,9 @@ const main = async () => {
 
   // init database
   await DBConnection.init(ormConfig);
+
+  // init redis conn
+  await RedisConnection.init();
 
   const server = http.createServer(app);
 
