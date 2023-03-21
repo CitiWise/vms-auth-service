@@ -16,7 +16,7 @@ import { uuid } from "uuidv4";
 import { RedisConnection } from "../../libs/redisConnection";
 import { IDecodedDataType } from "../../utils/interfaces";
 import { EClientId, redisPrefix, UserType } from "../../utils/constants.ts";
-import { ProfileType } from "../../types/profile";
+import { ValuerProfileType } from "../../types/profile";
 import { DBConnection } from "../../typeorm/dbCreateConnection";
 
 const DEFAULT_TOKEN_EXPIRY_INTERVAL = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -86,7 +86,7 @@ const authenticateClient = async (req: Request, res: Response) => {
     const profileRepo = UMSDataSource.getRepository(UMSEntityProfile);
 
     const userData = await profileRepo.findOne({
-      where: { entityId: client_id, profileType: "user_type" },
+      where: { entityId: client_id, ValuerProfileType: "user_type" },
     });
 
     if (!cookie || !cookieInfo || cookieInfo.expiry < Date.now()) {
@@ -240,7 +240,7 @@ const authenticateUser = async (req: Request, res: Response) => {
   const userData = await profileRepo.findOne({
     where: {
       entityId: userContactData.entityId,
-      profileType: ProfileType.USER_TYPE,
+      ValuerProfileType: ValuerProfileType.USER_TYPE,
     },
   });
 
@@ -259,7 +259,7 @@ const authenticateUser = async (req: Request, res: Response) => {
     const passwordData = await profileRepo.findOne({
       where: {
         entityId: userContactData.entityId,
-        profileType: ProfileType.PASSWORD,
+        ValuerProfileType: ValuerProfileType.PASSWORD,
       },
     });
     if (!passwordData) {
@@ -455,7 +455,7 @@ const generateToken = async (req: Request, res: Response) => {
   const profileRepo = UMSDataSource.getRepository(UMSEntityProfile);
   const userTypeData = await profileRepo.findOne({
     where: {
-      profileType: ProfileType.USER_TYPE,
+      ValuerProfileType: ValuerProfileType.USER_TYPE,
       entityId: authCode.entityId,
     },
   });

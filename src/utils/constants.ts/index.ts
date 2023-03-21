@@ -1,3 +1,5 @@
+import { LenderProfileType, ValuerProfileType } from "../../types/profile";
+
 export enum EClientId {
   vms = "vms",
   lms = "lms",
@@ -23,4 +25,25 @@ export const redisPrefix = {
   totalOtpSent: "TOTAL_OTP_SENT_",
   xsrfTokenObjPrefix: "XSRF_TOKEN_",
   trackingLayout: "TRACKING_LAYOUT_",
+};
+
+export const createLenderAccountFields = [
+    LenderProfileType.IS_BANK,
+    LenderProfileType.BANK_NAME,
+    LenderProfileType.BRANCH_NAME,
+    LenderProfileType.PASSWORD,
+    LenderProfileType.POC_NAME,
+    LenderProfileType.USER_TYPE
+];
+
+export const createValuerAccountFields = [
+    ValuerProfileType.NAME,
+    ValuerProfileType.PAN,
+    ValuerProfileType.PASSWORD,
+    ValuerProfileType.USER_TYPE
+];
+
+export const constants = {
+  SESSION_COOKIE_LMS: 'SESSION_COOKIE_LMS',
+  SESSION_COOKIE_VMS: 'SESSION_COOKIE_VMS'
 };
