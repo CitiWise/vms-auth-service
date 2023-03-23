@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { RedisConnection } from "../../libs/redisConnection";
 import { logger } from "../../utils/logger";
-import { AppType, redisPrefix, reqUserDataKey } from "../../utils/constants.ts";
+import { AppType, redisPrefix, reqUserDataKey } from "../../utils/constants";
 import {
   UMSAccessToken,
   UMSClientInfo,

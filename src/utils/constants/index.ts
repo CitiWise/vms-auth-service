@@ -13,6 +13,8 @@ export enum AppType {
   APP_LENDER = "appLender",
 }
 
+export const contactFields = ['phone', 'email'];
+
 export const reqUserDataKey = "userData";
 
 export const redisPrefix = {
@@ -43,7 +45,49 @@ export const createValuerAccountFields = [
     ValuerProfileType.USER_TYPE
 ];
 
+
+export const getValuerProfileFields = [
+  ValuerProfileType.NAME,
+  ValuerProfileType.PAN,
+  ValuerProfileType.SIGNATURE,
+  ValuerProfileType.PHOTO,
+  ValuerProfileType.IS_EMAIL_VERIFIED,
+  ValuerProfileType.ACCOUNT_VERIFIED,
+  ValuerProfileType.ADDRESS,
+];
+
+export const getLenderProfileFields = [
+  LenderProfileType.IS_BANK,
+  LenderProfileType.BANK_NAME,
+  LenderProfileType.BRANCH_NAME,
+  LenderProfileType.ADDRESS,
+  LenderProfileType.POC_NAME,
+  LenderProfileType.LOGO,
+  LenderProfileType.SIGNATURE,
+  LenderProfileType.IS_EMAIL_VERIFIED,
+  LenderProfileType.ACCOUNT_VERIFIED,
+];
+
+export const updateValuerProfileFields = [
+  ValuerProfileType.NAME,
+  ValuerProfileType.PAN,
+  ValuerProfileType.SIGNATURE,
+  ValuerProfileType.PHOTO,
+  ValuerProfileType.ADDRESS,
+];
+
+export const updateContactProfileFields = ['email', 'phone'];
+
 export const constants = {
   SESSION_COOKIE_LMS: 'SESSION_COOKIE_LMS',
   SESSION_COOKIE_VMS: 'SESSION_COOKIE_VMS'
 };
+
+export const OTP_VERIFICATION_EXPIRY_TIME = 300; // secs
+export const MAX_RESEND_OTP_ATTEMPTS = 5;
+export const MAX_INCORRECT_ATTEMPTS_ALLOWED = 10;
+export enum EAuthMode {
+    PHONE = 'phone',
+    EMAIL = 'email'
+}
+

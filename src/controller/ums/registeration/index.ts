@@ -9,7 +9,7 @@ import {
   constants,
   redisPrefix,
   UserType,
-} from "../../../utils/constants.ts";
+} from "../../../utils/constants";
 
 import {
   UMSClientInfo,

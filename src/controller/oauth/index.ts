@@ -15,7 +15,7 @@ import bcrypt from "bcrypt";
 import { uuid } from "uuidv4";
 import { RedisConnection } from "../../libs/redisConnection";
 import { IDecodedDataType } from "../../utils/interfaces";
-import { EClientId, redisPrefix, UserType } from "../../utils/constants.ts";
+import { EClientId, redisPrefix } from "../../utils/constants";
 import { ValuerProfileType } from "../../types/profile";
 import { DBConnection } from "../../typeorm/dbCreateConnection";
 
