@@ -6,9 +6,9 @@ import { ICreateProfileType } from "../../../utils/interfaces";
 import {
   createLenderAccountFields,
   createValuerAccountFields,
-  constants,
   redisPrefix,
   UserType,
+  sessionCookies,
 } from "../../../utils/constants";
 
 import {
@@ -146,14 +146,13 @@ const registerLender = async (req: Request, res: Response) => {
       clientId,
       entityId,
       value: uuid(),
-      name: constants.SESSION_COOKIE_LMS,
+      name: sessionCookies.SESSION_COOKIE_LMS,
       expiry: Date.now() + 604800000,
     });
 
     let savedCookie;
     let savedAuthCode;
-    const connection = UMSDataSource.getConnection();
-    const queryRunner = connection.createQueryRunner();
+    const queryRunner = UMSDataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
@@ -201,7 +200,7 @@ const registerLender = async (req: Request, res: Response) => {
       await queryRunner.commitTransaction();
       await queryRunner.release();
 
-      res.cookie(constants.SESSION_COOKIE_LMS, savedCookie.value, {
+      res.cookie(sessionCookies.SESSION_COOKIE_LMS, savedCookie.value, {
         httpOnly: true,
         signed: true,
         secure: true,
@@ -311,18 +310,17 @@ const registerValuer = async (req: Request, res: Response) => {
 
     const addressObject: IAddressType = req.body.address;
     const clientInfoRepo = UMSDataSource.getRepository(UMSClientInfo);
-
     const clientInfo = await clientInfoRepo.findOne({
       where: { clientId },
     });
 
-    if (!clientInfo) {
-      return res.status(401).json({
-        responseCode: "000016",
-        responseMessage: "Client Info Invalid",
-        status: "Fail",
-      });
-    }
+    // if (!clientInfo) {
+    //   return res.status(401).json({
+    //     responseCode: "000016",
+    //     responseMessage: "Client Info Invalid",
+    //     status: "Fail",
+    //   });
+    // }
 
     const cookieRepo = UMSDataSource.getRepository(UMSCookieInfo);
     const authCodeRepo = UMSDataSource.getRepository(UMSOauthCode);
@@ -339,23 +337,17 @@ const registerValuer = async (req: Request, res: Response) => {
       clientId,
       entityId,
       value: uuid(),
-      name: constants.SESSION_COOKIE_VMS,
+      name: sessionCookies.SESSION_COOKIE_VMS,
       expiry: Date.now() + 604800000,
     });
 
     let savedCookie;
     let savedAuthCode;
-    const connection = UMSDataSource.getConnection();
-    const queryRunner = connection.createQueryRunner();
+    const queryRunner = UMSDataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      await queryRunner.manager
-        .createQueryBuilder()
-        .insert()
-        .into("ums_entity_id_contact")
-        .values(contactDataArray)
-        .execute();
+      
 
       const address = await queryRunner.manager
         .createQueryBuilder()
@@ -378,17 +370,23 @@ const registerValuer = async (req: Request, res: Response) => {
         .values(profileDataArray)
         .execute();
 
+        await queryRunner.manager
+        .createQueryBuilder()
+        .insert()
+        .into("ums_entity_id_contact")
+        .values(contactDataArray)
+        .execute();
+
       await client.del(`${redisPrefix.xsrfTokenObjPrefix}${xsrfToken}`);
 
       savedCookie = await queryRunner.manager.save(cookie);
       savedAuthCode = await queryRunner.manager.save(authCode);
-
-      client.hmset(`${redisPrefix.cookiePrefix}${savedCookie.value}`, {
+      client.hmset(`${redisPrefix.cookiePrefix}${savedCookie?.value}`, {
         clientId: savedCookie.clientId,
         entityId: savedCookie.entityId,
       });
       client.expire(
-        `${redisPrefix.cookiePrefix}${savedCookie.value}`,
+        `${redisPrefix.cookiePrefix}${savedCookie?.value}`,
         savedCookie.expiry
       );
 
@@ -400,7 +398,7 @@ const registerValuer = async (req: Request, res: Response) => {
       await queryRunner.release();
 
       // Making cookie name for VMS login
-      res.cookie(constants.SESSION_COOKIE_VMS, savedCookie.value, {
+      res.cookie(sessionCookies.SESSION_COOKIE_VMS, savedCookie?.value, {
         httpOnly: true,
         signed: true,
         secure: true,

@@ -1,0 +1,13 @@
+{
+  "apps": [
+    {
+      "name": "auth-service",
+      "script": "./dist/index.js",
+      "merge_logs": true,
+      "log_file": ".logs/auth.out.err.log",
+      "out_file": ".logs/auth.out.log",
+      "error_file": ".logs/err.log",
+      "log_date_format": "YYYY-MM-DD HH:mm Z"
+    }
+  ]
+}

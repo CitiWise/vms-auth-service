@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { getRepository } from "typeorm";
+import { DBConnection } from "../../typeorm/dbCreateConnection";
 import { UMSEntityIdContact, UMSEntityProfile } from "../../typeorm/entities";
 import { AppType } from "../constants";
 import { IContactType, IProfileType } from "../interfaces";
@@ -143,7 +144,8 @@ const fetchContactFieldValue = async (
   contactType: string
 ): Promise<string> => {
   try {
-    const userProfileContactRepo = getRepository(UMSEntityIdContact);
+    const{UMSDataSource} =  DBConnection
+    const userProfileContactRepo = UMSDataSource.getRepository(UMSEntityIdContact);
     const userContactData = await userProfileContactRepo.findOne({
       where: { entityId, contactType },
     });

@@ -9,8 +9,8 @@ export enum UserType {
   LENDER = "lender",
 }
 export enum AppType {
-  APP_VALUER = "appValuer",
-  APP_LENDER = "appLender",
+  APP_VALUER = "valuer",
+  APP_LENDER = "lender",
 }
 
 export const contactFields = ['phone', 'email'];
@@ -78,9 +78,9 @@ export const updateValuerProfileFields = [
 
 export const updateContactProfileFields = ['email', 'phone'];
 
-export const constants = {
-  SESSION_COOKIE_LMS: 'SESSION_COOKIE_LMS',
-  SESSION_COOKIE_VMS: 'SESSION_COOKIE_VMS'
+export const sessionCookies = {
+  SESSION_COOKIE_LMS: 'SESSION_COOKIE_LENDER',
+  SESSION_COOKIE_VMS: 'SESSION_COOKIE_VALUER'
 };
 
 export const OTP_VERIFICATION_EXPIRY_TIME = 300; // secs
@@ -90,4 +90,10 @@ export enum EAuthMode {
     PHONE = 'phone',
     EMAIL = 'email'
 }
+
+export const EMAIL_TEMPLATE_FILE_NAME_MAPPER = {
+  signupEmailOtp: { fileName: 'signup-otp', subject: 'Email Verification OTP' },
+  forgotPasswordOtp: { fileName: 'forgot-password-otp', subject: 'Email Verification OTP' }
+};
+
 

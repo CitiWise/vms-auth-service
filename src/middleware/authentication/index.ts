@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { RedisConnection } from "../../libs/redisConnection";
 import { logger } from "../../utils/logger";
-import { AppType, redisPrefix, reqUserDataKey } from "../../utils/constants";
+import { AppType, redisPrefix, reqUserDataKey, sessionCookies } from "../../utils/constants";
 import {
   UMSAccessToken,
   UMSClientInfo,
@@ -60,10 +60,9 @@ const validateCookie = async (
   const appType = String(req.headers.apptype);
   const panelCookieName =
     {
-      [AppType.APP_VALUER]: "SESSION_COOKIE_VMS",
-      [AppType.APP_LENDER]: "SESSION_COOKIE_LMS",
+      [AppType.APP_VALUER]: sessionCookies.SESSION_COOKIE_VMS,
+      [AppType.APP_LENDER]: sessionCookies.SESSION_COOKIE_LMS,
     }[appType] || "";
-
   return validateAppCookies(req, res, next, panelCookieName);
 };
 

@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
-import { getManager, QueryRunner, DataSource } from "typeorm";
+import { QueryRunner } from "typeorm";
 import { StatusCodes } from "http-status-codes";
 import {
   UMSAccessToken,
   UMSClientInfo,
-  UMSClientInfoRedirectUrls,
   UMSCookieInfo,
   UMSEntityIdContact,
   UMSEntityProfile,
@@ -15,7 +14,7 @@ import bcrypt from "bcrypt";
 import { uuid } from "uuidv4";
 import { RedisConnection } from "../../libs/redisConnection";
 import { IDecodedDataType } from "../../utils/interfaces";
-import { EClientId, redisPrefix } from "../../utils/constants";
+import { EClientId, redisPrefix, sessionCookies } from "../../utils/constants";
 import { ValuerProfileType } from "../../types/profile";
 import { DBConnection } from "../../typeorm/dbCreateConnection";
 
@@ -23,10 +22,9 @@ const DEFAULT_TOKEN_EXPIRY_INTERVAL = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 const getCookieName = (clientId: string) =>
   ({
-    [EClientId.vms]: "SESSION_COOKIE_VMS",
-    [EClientId.lms]: "SESSION_COOKIE_LMS",
+    [EClientId.vms]: sessionCookies.SESSION_COOKIE_VMS,
+    [EClientId.lms]: sessionCookies.SESSION_COOKIE_LMS,
   }[clientId]);
-
 interface IClientQuery {
   response_type: string;
   state: string;
@@ -64,29 +62,29 @@ const authenticateClient = async (req: Request, res: Response) => {
     // fetching seller, admin or wms cookie on the bases of client Id we are receiving
     const cookie = req.signedCookies[getCookieName(client_id)];
 
-    const redirectUrlRepo = UMSDataSource.getRepository(
-      UMSClientInfoRedirectUrls
-    );
+    // const redirectUrlRepo = UMSDataSource.getRepository(
+    //   UMSClientInfoRedirectUrls
+    // );
     const cookieRepo = UMSDataSource.getRepository(UMSCookieInfo);
 
-    const redirectUrlEntry = await redirectUrlRepo.findOne({
-      where: { clientId: client_id, redirectUrl: redirect_url },
-    });
+    // const redirectUrlEntry = await redirectUrlRepo.findOne({
+    //   where: { clientId: client_id, redirectUrl: redirect_url },
+    // });
 
-    if (!redirectUrlEntry) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        responseCode: "000003",
-        responseMessage: "Invalid Client_Id & Redirect URL",
-        status: "Fail",
-      });
-    }
+    // if (!redirectUrlEntry) {
+    //   return res.status(StatusCodes.BAD_REQUEST).json({
+    //     responseCode: "000003",
+    //     responseMessage: "Invalid Client_Id & Redirect URL",
+    //     status: "Fail",
+    //   });
+    // }
     const cookieInfo = await cookieRepo.findOne({
       where: { clientId: client_id, value: cookie },
     });
     const profileRepo = UMSDataSource.getRepository(UMSEntityProfile);
 
     const userData = await profileRepo.findOne({
-      where: { entityId: client_id, ValuerProfileType: "user_type" },
+      where: { entityId: client_id, profileType: "user_type" },
     });
 
     if (!cookie || !cookieInfo || cookieInfo.expiry < Date.now()) {
@@ -240,7 +238,7 @@ const authenticateUser = async (req: Request, res: Response) => {
   const userData = await profileRepo.findOne({
     where: {
       entityId: userContactData.entityId,
-      ValuerProfileType: ValuerProfileType.USER_TYPE,
+      profileType: ValuerProfileType.USER_TYPE,
     },
   });
 
@@ -259,7 +257,7 @@ const authenticateUser = async (req: Request, res: Response) => {
     const passwordData = await profileRepo.findOne({
       where: {
         entityId: userContactData.entityId,
-        ValuerProfileType: ValuerProfileType.PASSWORD,
+        profileType: ValuerProfileType.PASSWORD,
       },
     });
     if (!passwordData) {
@@ -286,13 +284,13 @@ const authenticateUser = async (req: Request, res: Response) => {
     where: { clientId },
   });
 
-  if (!clientInfo) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      responseCode: "000016",
-      responseMessage: "Client Info Invalid",
-      status: "Fail",
-    });
-  }
+  // if (!clientInfo) {
+  //   return res.status(StatusCodes.BAD_REQUEST).json({
+  //     responseCode: "000016",
+  //     responseMessage: "Client Info Invalid",
+  //     status: "Fail",
+  //   });
+  // }
 
   const authCode = UMSDataSource.getRepository(UMSOauthCode).create({
     clientId,
@@ -315,7 +313,7 @@ const authenticateUser = async (req: Request, res: Response) => {
   let savedAuthCode;
   UMSDataSource;
   const queryRunner: QueryRunner = await UMSDataSource.createQueryRunner();
-  await queryRunner.connect()
+  await queryRunner.connect();
   await queryRunner.startTransaction();
   try {
     await client.del(`${redisPrefix.xsrfTokenObjPrefix}${xsrfToken}`);
@@ -412,13 +410,13 @@ const generateToken = async (req: Request, res: Response) => {
     where: { clientId: clientData[0], clientSecret: clientData[1] },
   });
 
-  if (!clientInfo) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      responseCode: "000016",
-      responseMessage: "Client Info Invalid",
-      status: "Fail",
-    });
-  }
+  // if (!clientInfo) {
+  //   return res.status(StatusCodes.BAD_REQUEST).json({
+  //     responseCode: "000016",
+  //     responseMessage: "Client Info Invalid",
+  //     status: "Fail",
+  //   });
+  // }
   const authCodeRepo = UMSDataSource.getRepository(UMSOauthCode);
   const authCode = await authCodeRepo.findOne({
     where: { code, stale: false },
@@ -455,13 +453,13 @@ const generateToken = async (req: Request, res: Response) => {
   const profileRepo = UMSDataSource.getRepository(UMSEntityProfile);
   const userTypeData = await profileRepo.findOne({
     where: {
-      ValuerProfileType: ValuerProfileType.USER_TYPE,
+      profileType: ValuerProfileType.USER_TYPE,
       entityId: authCode.entityId,
     },
   });
 
   const queryRunner: QueryRunner = await UMSDataSource.createQueryRunner();
-  await queryRunner.connect()
+  await queryRunner.connect();
   await queryRunner.startTransaction();
 
   try {
@@ -523,7 +521,7 @@ const logoutUser = async (req: Request, res: Response) => {
   });
 
   const queryRunner: QueryRunner = await UMSDataSource.createQueryRunner();
-  await queryRunner.connect()
+  await queryRunner.connect();
   await queryRunner.startTransaction();
   try {
     await queryRunner.manager.remove(accessTokens);
@@ -576,9 +574,9 @@ const userRoles = async (req: Request, res: Response) => {
   // TODO fix Raw query and create indexes
 
   const accessToken: IDecodedDataType = req["userData"];
-  const manager = getManager();
-  const joinResult =
-    await manager.query(`SELECT ums_acl_group.name as group_name, ums_acl_permissions.name FROM ums_acl_entity_group_mapping LEFT JOIN
+  const { UMSDataSource } = DBConnection;
+  const joinResult = await UMSDataSource.manager
+    .query(`SELECT ums_acl_group.name as group_name, ums_acl_permissions.name FROM ums_acl_entity_group_mapping LEFT JOIN
  ums_acl_group ON ums_acl_entity_group_mapping.acl_group_id=ums_acl_group.id LEFT JOIN ums_acl_group_permission_mapping ON
  ums_acl_group.id = ums_acl_group_permission_mapping.acl_group_id LEFT JOIN ums_acl_permissions ON
  ums_acl_group_permission_mapping.acl_permission_id = ums_acl_permissions.id WHERE ums_acl_entity_group_mapping.entity_id = ${accessToken.entityId}`);

@@ -29,8 +29,6 @@ import {
 import { Otp } from "../../../services/otp";
 import { logger } from "../../../utils/logger";
 import { ValuerProfileType } from "../../../types/profile";
-import axios from "axios";
-import { StatusCodes } from "http-status-codes";
 import { DBConnection } from "../../../typeorm/dbCreateConnection";
 import { ContactService } from "../../../services/contact";
 interface IAddressType {
@@ -54,7 +52,7 @@ export class ValuerProfile {
   public static async get(req: Request, res: Response) {
     try {
       const { UMSDataSource } = DBConnection;
-      const { entityId, clientId }: IDecodedDataType = req[reqUserDataKey];
+      const { entityId }: IDecodedDataType = req[reqUserDataKey];
 
       const userProfileRepo = UMSDataSource.getRepository(UMSEntityProfile);
       const userData = await userProfileRepo.find({ where: { entityId } });
@@ -119,10 +117,9 @@ export class ValuerProfile {
     let queryRunner;
 
     try {
-      const { entityId, clientId }: IDecodedDataType = req[reqUserDataKey];
+      const { entityId }: IDecodedDataType = req[reqUserDataKey];
       const { UMSDataSource } = DBConnection;
-      const connection = UMSDataSource.getConnection();
-      queryRunner = connection.createQueryRunner();
+      queryRunner = UMSDataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
 

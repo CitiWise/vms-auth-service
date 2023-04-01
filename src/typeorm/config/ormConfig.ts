@@ -4,7 +4,7 @@ import { DataSource, DataSourceOptions, FindOptionsUtils } from "typeorm";
 
 dotenv.config({ path: path.join(__dirname, "../../../.env") });
 
-const config:DataSourceOptions = {
+const config: DataSourceOptions = {
   type: "mysql",
   host: process.env.MYSQL_HOST,
   port: Number(process.env.MYSQL_PORT),
@@ -28,4 +28,4 @@ const config:DataSourceOptions = {
     connectionLimit: 20,
   },
 };
-export default config
+export default config;
