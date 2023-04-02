@@ -1,7 +1,7 @@
 export enum LenderProfileType {
     IS_BANK = 'isBank',
-    BANK_NAME = 'bankName',
-    BRANCH_NAME = 'branchName',
+    BANK_NAME = 'name',
+    BRANCH_NAME = 'branch',
     ADDRESS = 'address',
     PASSWORD = 'password',
     USER_TYPE = 'user_type',
@@ -9,7 +9,8 @@ export enum LenderProfileType {
     SIGNATURE = 'signature',
     IS_EMAIL_VERIFIED = 'isEmailVerified',
     ACCOUNT_VERIFIED = 'accountVerified',
-    POC_NAME = 'pocName',
+    POC_NAME = 'poc',
+    POC_PHONE = 'pocPhone'
 }
 
 export enum ValuerProfileType {
