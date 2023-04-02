@@ -76,6 +76,15 @@ export const updateValuerProfileFields = [
   ValuerProfileType.ADDRESS,
 ];
 
+export const updateLenderProfileFields = [
+  LenderProfileType.BANK_NAME,
+  LenderProfileType.BRANCH_NAME,
+  LenderProfileType.ADDRESS,
+  LenderProfileType.POC_NAME,
+  LenderProfileType.LOGO,
+  LenderProfileType.SIGNATURE
+];
+
 export const updateContactProfileFields = ['email', 'phone'];
 
 export const sessionCookies = {

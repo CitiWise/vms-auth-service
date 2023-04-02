@@ -124,13 +124,13 @@ const registerLender = async (req: Request, res: Response) => {
       where: { clientId },
     });
 
-    if (!clientInfo) {
-      return res.status(401).json({
-        responseCode: "000016",
-        responseMessage: "Client Info Invalid",
-        status: "Fail",
-      });
-    }
+    // if (!clientInfo) {
+    //   return res.status(401).json({
+    //     responseCode: "000016",
+    //     responseMessage: "Client Info Invalid",
+    //     status: "Fail",
+    //   });
+    // }
 
     logger.info("!!!!!!!!generating cookie!!!!!!!!");
     const cookieRepo = UMSDataSource.getRepository(UMSCookieInfo);
@@ -156,13 +156,6 @@ const registerLender = async (req: Request, res: Response) => {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      await queryRunner.manager
-        .createQueryBuilder()
-        .insert()
-        .into("ums_entity_id_contact")
-        .values(contactDataArray)
-        .execute();
-
       const address = await queryRunner.manager
         .createQueryBuilder()
         .insert()
@@ -181,6 +174,13 @@ const registerLender = async (req: Request, res: Response) => {
         .insert()
         .into("ums_entity_profile")
         .values(profileDataArray)
+        .execute();
+
+      await queryRunner.manager
+        .createQueryBuilder()
+        .insert()
+        .into("ums_entity_id_contact")
+        .values(contactDataArray)
         .execute();
 
       await client.del(`${redisPrefix.xsrfTokenObjPrefix}${xsrfToken}`);
@@ -213,7 +213,8 @@ const registerLender = async (req: Request, res: Response) => {
         status: "Success",
         responseBody: { oauthCode: savedAuthCode.code },
       });
-    } catch (error) {
+    } catch (error: any) {
+      logger.error(error.message);
       await queryRunner.rollbackTransaction();
       await queryRunner.release();
 
@@ -347,8 +348,6 @@ const registerValuer = async (req: Request, res: Response) => {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      
-
       const address = await queryRunner.manager
         .createQueryBuilder()
         .insert()
@@ -370,7 +369,7 @@ const registerValuer = async (req: Request, res: Response) => {
         .values(profileDataArray)
         .execute();
 
-        await queryRunner.manager
+      await queryRunner.manager
         .createQueryBuilder()
         .insert()
         .into("ums_entity_id_contact")
