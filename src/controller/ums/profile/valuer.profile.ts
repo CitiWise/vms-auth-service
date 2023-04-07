@@ -52,7 +52,7 @@ export class ValuerProfile {
   public static async get(req: Request, res: Response) {
     try {
       const { UMSDataSource } = DBConnection;
-      const { entityId }: IDecodedDataType = req[reqUserDataKey];
+      const entityId = "77d592e9-b5de-40e8-b8f3-f95020f4156c";
 
       const userProfileRepo = UMSDataSource.getRepository(UMSEntityProfile);
       const userData = await userProfileRepo.find({ where: { entityId } });
@@ -211,8 +211,6 @@ export class ValuerProfile {
     }
   }
 
-
-
   public static async updatePassword(req: Request, res: Response) {
     try {
       const { entityId }: IDecodedDataType = req[reqUserDataKey];
@@ -272,7 +270,7 @@ export class ValuerProfile {
 
   public static async resetPassword(req: Request, res: Response) {
     try {
-        const { UMSDataSource } = DBConnection;
+      const { UMSDataSource } = DBConnection;
       const { phone, otp, password } = req.body;
       const entityId = await ContactService.fetchEntityId("phone", phone);
       const userProfileRepo = UMSDataSource.getRepository(UMSEntityProfile);
@@ -317,5 +315,26 @@ export class ValuerProfile {
         status: "Fail",
       });
     }
+  }
+  public static async verifyToken(req: Request, res: Response) {
+    const { UMSDataSource } = DBConnection;
+    const profileRepo = UMSDataSource.getRepository(UMSEntityProfile);
+
+    const userTypeData = await profileRepo.findOne({
+      where: {
+        profileType: ValuerProfileType.USER_TYPE,
+        entityId: req[reqUserDataKey].entityId,
+      },
+    });
+
+    res.json({
+      responseCode: "000045",
+      responseMessage: "Token Verified",
+      status: "Success",
+      responseBody: {
+        entityId: req[reqUserDataKey].entityId,
+        userType: userTypeData?.profileValue,
+      },
+    });
   }
 }
