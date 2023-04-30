@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { RedisConnection } from "../../libs/redisConnection";
 import { logger } from "../../utils/logger";
-import { AppType, redisPrefix, reqUserDataKey, sessionCookies } from "../../utils/constants";
+import {
+  AppType,
+  redisPrefix,
+  reqUserDataKey,
+  sessionCookies,
+} from "../../utils/constants";
 import {
   UMSAccessToken,
   UMSClientInfo,
@@ -19,35 +24,35 @@ const validateAppCookies = async (
   // So no cookie will be re initialized or re assigned
   const cookie = req.signedCookies[cookieName];
 
-  // if (!cookie) {
-  //   return res.status(401).json({
-  //     responseCode: "000028",
-  //     responseMessage: "No Cookie Present",
-  //     status: "Fail",
-  //   });
-  // }
+  if (!cookie) {
+    return res.status(401).json({
+      responseCode: "000028",
+      responseMessage: "No Cookie Present",
+      status: "Fail",
+    });
+  }
 
-  // const { client } = RedisConnection;
-  // const cachedCookie: any = await client.hgetall(
-  //   `${redisPrefix.cookiePrefix}${cookie}`
-  // );
-  // if (cachedCookie) {
-  //   req[reqUserDataKey] = { ...cachedCookie };
-  //   logger.info("Using Cached cookie");
-  // } else {
-  //   const { UMSDataSource } = DBConnection;
-  //   const cookieRepo = UMSDataSource.getRepository(UMSCookieInfo);
-  //   const cookieData = await cookieRepo.findOne({ where: { value: cookie } });
-  //   if (!cookieData || cookieData.expiry < Date.now()) {
-  //     res.clearCookie(cookieName);
-  //     return res.status(401).json({
-  //       responseCode: "000029",
-  //       responseMessage: " Cookie Present is Invalid",
-  //       status: "Fail",
-  //     });
-  //   }
-  //   req[reqUserDataKey] = { ...cookieData };
-  // }
+  const { client } = RedisConnection;
+  const cachedCookie: any = await client.hgetall(
+    `${redisPrefix.cookiePrefix}${cookie}`
+  );
+  if (cachedCookie) {
+    req[reqUserDataKey] = { ...cachedCookie };
+    logger.info("Using Cached cookie");
+  } else {
+    const { UMSDataSource } = DBConnection;
+    const cookieRepo = UMSDataSource.getRepository(UMSCookieInfo);
+    const cookieData = await cookieRepo.findOne({ where: { value: cookie } });
+    if (!cookieData || cookieData.expiry < Date.now()) {
+      res.clearCookie(cookieName);
+      return res.status(401).json({
+        responseCode: "000029",
+        responseMessage: " Cookie Present is Invalid",
+        status: "Fail",
+      });
+    }
+    req[reqUserDataKey] = { ...cookieData };
+  }
   next();
 };
 

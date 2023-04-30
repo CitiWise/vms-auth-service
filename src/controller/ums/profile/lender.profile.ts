@@ -52,7 +52,8 @@ export class LenderProfile {
   public static async get(req: Request, res: Response) {
     try {
       const { UMSDataSource } = DBConnection;
-      const  entityId = "b9244141-32d8-4c1b-91e1-60e7512536eb";
+
+      const { entityId, clientId }: IDecodedDataType = req[reqUserDataKey];
 
       const userProfileRepo = UMSDataSource.getRepository(UMSEntityProfile);
       const userData = await userProfileRepo.find({ where: { entityId } });

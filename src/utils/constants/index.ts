@@ -26,7 +26,6 @@ export const redisPrefix = {
   forgotPasswordOtp: "FORGOT_PASSWORD_OTP_",
   totalOtpSent: "TOTAL_OTP_SENT_",
   xsrfTokenObjPrefix: "XSRF_TOKEN_",
-  trackingLayout: "TRACKING_LAYOUT_",
 };
 
 export const createLenderAccountFields = [

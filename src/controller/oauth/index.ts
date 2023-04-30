@@ -17,6 +17,7 @@ import { IDecodedDataType } from "../../utils/interfaces";
 import { EClientId, redisPrefix, sessionCookies } from "../../utils/constants";
 import { ValuerProfileType } from "../../types/profile";
 import { DBConnection } from "../../typeorm/dbCreateConnection";
+import { logger } from "../../utils/logger";
 
 const DEFAULT_TOKEN_EXPIRY_INTERVAL = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -390,7 +391,6 @@ const generateToken = async (req: Request, res: Response) => {
       status: "Fail",
     });
   }
-
   const decodedData = Buffer.from(
     authorization?.split(" ")[1],
     "base64"
@@ -405,18 +405,19 @@ const generateToken = async (req: Request, res: Response) => {
     });
   }
 
+
   const clientInfoRepo = UMSDataSource.getRepository(UMSClientInfo);
   const clientInfo = await clientInfoRepo.findOne({
     where: { clientId: clientData[0], clientSecret: clientData[1] },
   });
 
-  // if (!clientInfo) {
-  //   return res.status(StatusCodes.BAD_REQUEST).json({
-  //     responseCode: "000016",
-  //     responseMessage: "Client Info Invalid",
-  //     status: "Fail",
-  //   });
-  // }
+  if (!clientInfo) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      responseCode: "000016",
+      responseMessage: "Client Info Invalid",
+      status: "Fail",
+    });
+  }
   const authCodeRepo = UMSDataSource.getRepository(UMSOauthCode);
   const authCode = await authCodeRepo.findOne({
     where: { code, stale: false },
@@ -449,7 +450,6 @@ const generateToken = async (req: Request, res: Response) => {
 
   let savedAccessToken;
 
-  let warehouseData: UMSEntityProfile | undefined;
   const profileRepo = UMSDataSource.getRepository(UMSEntityProfile);
   const userTypeData = await profileRepo.findOne({
     where: {
@@ -484,7 +484,8 @@ const generateToken = async (req: Request, res: Response) => {
 
     await queryRunner.manager.save(authCode);
     await queryRunner.commitTransaction();
-  } catch (error) {
+  } catch (error: any) {
+    logger.error(error.message);
     await queryRunner.rollbackTransaction();
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       responseCode: "000005",
@@ -513,10 +514,10 @@ const logoutUser = async (req: Request, res: Response) => {
   const accessTokenRepo = UMSDataSource.getRepository(UMSAccessToken);
   const cookieRepo = UMSDataSource.getRepository(UMSCookieInfo);
 
-  const cookies = await cookieRepo.find({
+  const cookies: UMSCookieInfo[] = await cookieRepo.find({
     where: { clientId: cookieData.clientId, entityId: cookieData.entityId },
   });
-  const accessTokens = await accessTokenRepo.find({
+  const accessTokens: UMSAccessToken[] = await accessTokenRepo.find({
     where: { clientId: cookieData.clientId, entityId: cookieData.entityId },
   });
 

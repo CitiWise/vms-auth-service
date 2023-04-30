@@ -13,7 +13,6 @@ dotenv.config({ path: "../.env " });
 
 const main = async () => {
   const PORT = process.env.PORT;
-  console.log(PORT);
 
   // init database
   await DBConnection.init(ormConfig);
